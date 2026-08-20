@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- PROTECCIÓN BRÚJULA DEL LENGUAJE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Cliente y sesión quedan accesibles globalmente (window.__sb / window.__session)
+  // para que más abajo podamos llamar a la Edge Function que genera el plan
+  // sin tener que crear un segundo cliente ni repetir la clave.
+  window.__sb = null;
+  window.__session = null;
+  window.__authReady = (async () => {
+    const SUPABASE_URL = 'https://tcxxfhxdgvxziruwcrfj.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjeHhmaHhkZ3Z4emlydXdjcmZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3NDI5NjIsImV4cCI6MjA5ODMxODk2Mn0.oLi1CGBaf1LuQBElbB5hzt1IRuEEYXrW7qp8doyHod8';
+    const LOGIN_URL = 'https://sandythewondermom.github.io/brujula-login/';
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.replace(LOGIN_URL); return; }
+    window.__sb = sb;
+    window.__session = session;
+  })();
+</script>
+<!-- FIN PROTECCIÓN -->
+<title>Mi Plan de 15 Minutos™ — Sandy the Wondermom</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --sage: #7A9E7E;
+    --sage-light: #EEF4EF;
+    --sage-mid: #C5DAC7;
+    --terracotta: #C47B5A;
+    --terracotta-light: #FAF0EB;
+    --cream: #FBF8F4;
+    --ink: #2C2C2C;
+    --ink-soft: #5A5A5A;
+    --ink-muted: #9A9A9A;
+    --border: #E8E2DA;
+    --white: #FFFFFF;
+    --shadow: 0 2px 16px rgba(44,44,44,0.07);
+    --gold: #C8A96E;
+    --gold-light: #FBF5EA;
+    --bloque1: #7A9E7E;
+    --bloque2: #C8A96E;
+    --bloque3: #C47B5A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 24px 22px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .header-brand {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 6px;
+  }
+
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .header-title em { color: var(--terracotta); font-style: italic; }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--sage);
+    text-decoration: none;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+  .back-link:hover { opacity: 0.75; }
+  .header-sub { font-size: 12px; color: var(--ink-muted); margin-top: 6px; }
+
+  .intro {
+    background: var(--sage-light);
+    border-bottom: 1px solid var(--sage-mid);
+    padding: 16px 24px;
+    text-align: center;
+  }
+
+  .intro p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .main {
+    padding: 20px 16px;
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* SELECTOR */
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--sage-light);
+    border: 1.5px solid var(--sage-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--sage);
+    flex-shrink: 0;
+  }
+
+  .empieza-aqui {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--terracotta);
+    margin-bottom: 10px;
+    animation: empieza-pulso 1.8s ease-in-out infinite;
+  }
+
+  @keyframes empieza-pulso {
+    0%, 100% { opacity: 1; transform: translateY(0); }
+    50% { opacity: 0.7; transform: translateY(-2px); }
+  }
+
+  .card-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 1px;
+  }
+
+  .card-body { padding: 14px 18px; }
+
+  .bordes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .borde-btn {
+    padding: 11px 10px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .borde-btn:hover { border-color: var(--sage-mid); background: var(--sage-light); }
+  .borde-btn.active { border-color: var(--sage); background: var(--sage-light); }
+
+  .bb-icon { font-size: 20px; margin-bottom: 3px; }
+  .bb-num { font-size: 9px; color: var(--ink-muted); font-weight: 600; letter-spacing: 0.5px; }
+  .bb-name { font-size: 11px; font-weight: 600; color: var(--ink); margin-top: 1px; line-height: 1.3; }
+
+  .btn-primary {
+    background: var(--sage);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .btn-primary:hover { background: #6A8E6E; }
+  .btn-primary:disabled { background: var(--ink-muted); cursor: not-allowed; }
+
+  /* DETALLE: contexto + nivel + nota */
+  .detalle-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .nivel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 7px;
+  }
+
+  .nivel-btn {
+    padding: 11px 6px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .nivel-btn:hover { border-color: var(--sage-mid); }
+
+  .nivel-btn.active-domina { border-color: var(--sage); background: var(--sage-light); color: var(--sage); }
+  .nivel-btn.active-emergiendo { border-color: #E4A44A; background: #FEF6E8; color: #B07E32; }
+  .nivel-btn.active-lejos { border-color: var(--terracotta); background: var(--terracotta-light); color: var(--terracotta); }
+
+  .nota-libre {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    resize: none;
+    height: 64px;
+    margin-bottom: 14px;
+  }
+
+  .nota-libre:focus { outline: none; border-color: var(--sage-mid); }
+
+  .generando {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    font-style: italic;
+  }
+
+  .reflexion-box {
+    display: none;
+    background: var(--sage-light);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin: 18px 0;
+  }
+
+  .reflexion-box.show { display: block; }
+
+  .reflexion-label {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--sage);
+    margin-bottom: 10px;
+  }
+
+  .reflexion-guardado {
+    display: none;
+    font-size: 12px;
+    color: var(--sage);
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  .reflexion-guardado.show { display: block; }
+
+  /* RESULTADO */
+  .resultado { display: none; flex-direction: column; gap: 16px; }
+  .resultado.show { display: flex; }
+
+  /* PREPÁRATE TÚ PRIMERO */
+  .preparate {
+    background: linear-gradient(135deg, #4A7A5A 0%, #7A9E7E 100%);
+    border-radius: 16px;
+    padding: 20px 18px;
+    color: white;
+  }
+
+  .prep-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 4px;
+  }
+
+  .prep-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .prep-pasos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .prep-paso {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .prep-paso-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .prep-paso-text {
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.5;
+  }
+
+  .prep-paso-text strong {
+    color: white;
+    font-weight: 600;
+  }
+
+  .prep-timer-wrap {
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .prep-timer-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: white;
+    min-width: 60px;
+  }
+
+  .prep-timer-display.terminado {
+    color: rgba(255,255,255,0.6);
+  }
+
+  .prep-timer-btns {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .prep-btn-start {
+    flex: 1;
+    padding: 9px;
+    border-radius: 10px;
+    border: none;
+    background: white;
+    color: var(--sage);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .prep-btn-start:hover { background: rgba(255,255,255,0.9); }
+
+  .prep-btn-listo {
+    flex: 1;
+    padding: 9px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(255,255,255,0.4);
+    background: transparent;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .prep-btn-listo:hover { background: rgba(255,255,255,0.15); }
+
+  .prep-completado {
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: white;
+    font-weight: 500;
+    text-align: center;
+    display: none;
+  }
+
+  .prep-completado.show { display: block; }
+
+  /* CABECERA PLAN */
+  .plan-cab {
+    background: var(--sage);
+    border-radius: 16px;
+    padding: 20px 18px;
+  }
+
+  .plan-cab-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .plan-cab-icon { font-size: 32px; flex-shrink: 0; }
+
+  .plan-cab-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 3px;
+  }
+
+  .plan-cab-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  /* BARRA DE TIEMPO TOTAL */
+  .tiempo-total {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .tiempo-seg {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    opacity: 0.6;
+  }
+
+  .tiempo-seg-1 { background: #A8D5B8; }
+  .tiempo-seg-2 { background: #F0DEB8; }
+  .tiempo-seg-3 { background: #E8B4A0; }
+
+  .tiempo-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+
+  .tiempo-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* BLOQUES */
+  .bloques-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .bloque-card {
+    background: var(--white);
+    border-radius: 16px;
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .bloque-card.activo { border-color: var(--sage); }
+  .bloque-card.completado { opacity: 0.7; }
+
+  .bloque-top {
+    padding: 14px 16px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bloque-num-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .bloque-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+
+  .bn-1 { background: var(--bloque1); }
+  .bn-2 { background: var(--bloque2); }
+  .bn-3 { background: var(--bloque3); }
+
+  .bloque-minutos {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  .bloque-info { flex: 1; }
+
+  .bloque-contexto {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 3px;
+  }
+
+  .bloque-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  .bloque-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--white);
+    flex-shrink: 0;
+    transition: all 0.2s;
+    margin-top: 4px;
+  }
+
+  .bloque-check.hecho { background: var(--sage); border-color: var(--sage); }
+
+  .bloque-body { padding: 14px 16px; }
+
+  .bloque-desc {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+
+  /* FRASE DE MODELADO */
+  .frase-modelado {
+    background: var(--sage-light);
+    border: 1.5px solid var(--sage-mid);
+    border-radius: 11px;
+    padding: 11px 13px;
+    margin-bottom: 12px;
+  }
+
+  .fm-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 5px;
+  }
+
+  .fm-frase {
+    font-size: 13px;
+    color: var(--ink);
+    font-style: italic;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  /* TEMPORIZADOR */
+  .timer-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .timer-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 1px;
+    min-width: 70px;
+  }
+
+  .timer-display.corriendo { color: var(--sage); }
+  .timer-display.terminado { color: var(--terracotta); }
+
+  .timer-btns {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .timer-btn {
+    flex: 1;
+    padding: 9px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .timer-start {
+    background: var(--sage);
+    color: var(--white);
+  }
+
+  .timer-start:hover { background: #6A8E6E; }
+
+  .timer-reset {
+    background: var(--cream);
+    color: var(--ink-muted);
+    border: 1.5px solid var(--border) !important;
+    border: none;
+  }
+
+  .timer-reset:hover { background: var(--border); }
+
+  .timer-marcar {
+    background: var(--sage-light);
+    color: var(--sage);
+    border: 1.5px solid var(--sage-mid) !important;
+    border: none;
+  }
+
+  /* PROGRESO PLAN */
+  .progreso-plan {
+    background: var(--white);
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .pp-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .pp-bar-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .pp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--bloque1), var(--bloque2), var(--bloque3));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .pp-bloques {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .pp-bloque {
+    flex: 1;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition: all 0.2s;
+  }
+
+  .pp-bloque.hecho {
+    background: var(--sage-light);
+    border-color: var(--sage-mid);
+    color: var(--sage);
+  }
+
+  /* COMPLETADO */
+  .plan-completado {
+    display: none;
+    background: var(--sage-light);
+    border: 2px solid var(--sage-mid);
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+  }
+
+  .plan-completado.show { display: block; }
+
+  .pc-icon { font-size: 44px; margin-bottom: 12px; }
+
+  .pc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .pc-text {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    margin-bottom: 18px;
+  }
+
+  .pc-racha {
+    display: none;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--terracotta);
+    background: #FBF0E8;
+    border-radius: 10px;
+    padding: 10px 16px;
+    margin: -6px 0 18px 0;
+  }
+
+  .pc-racha.show { display: block; }
+
+  /* NOTA */
+  .nota-final {
+    background: var(--gold-light);
+    border: 1.5px solid #F0DEB8;
+    border-radius: 13px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .nf-icon { font-size: 18px; flex-shrink: 0; }
+  .nf-text { font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; }
+  .nf-text strong { color: var(--ink); font-weight: 600; }
+
+  .btn-secondary {
+    background: var(--white);
+    color: var(--sage);
+    border: 1.5px solid var(--sage-mid);
+    border-radius: 12px;
+    padding: 13px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  .btn-secondary:hover { background: var(--sage-light); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink);
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 300;
+    transition: transform 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">Sandy the Wondermom</div>
+  <a class="back-link" href="https://sandythewondermom.github.io/brujula-login/portal.html">← Volver a mis herramientas</a>
+  <div class="header-title">Mi Plan de <em>15 Minutos</em>™</div>
+  <div class="header-sub">Tres bloques. Quince minutos. Un avance real.</div>
+</div>
+
+<div class="intro">
+  <p>No necesitas más tiempo. Necesitas saber exactamente qué hacer con el tiempo que ya tienes.</p>
+</div>
+
+<div class="main">
+
+  <div class="empieza-aqui">👇 Empieza aquí</div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-num">1</div>
+      <div>
+        <div class="card-label">Elige el borde</div>
+        <div class="card-title">¿En qué etapa está tu hijo hoy?</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="bordes-grid" id="bordesGrid"></div>
+    </div>
+  </div>
+
+  <div class="card" id="cardDetalle" style="display:none;">
+    <div class="card-header">
+      <div class="card-num">2</div>
+      <div>
+        <div class="card-label">Cuéntame más</div>
+        <div class="card-title">Para hacerte un plan solo para hoy</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="detalle-label">¿Dónde vais a tener estos 15 minutos?</div>
+      <div class="bordes-grid" id="contextoGrid" style="margin-bottom:16px;"></div>
+
+      <div class="detalle-label">¿Cómo está ahora mismo en este borde?</div>
+      <div class="nivel-grid" id="nivelGrid" style="margin-bottom:16px;"></div>
+
+      <div class="detalle-label">¿Algo que quieras contarme? (opcional)</div>
+      <textarea class="nota-libre" id="notaLibre" placeholder="Ej: hoy está más cansado de lo normal, o esta semana ha empezado a señalar más..." maxlength="240"></textarea>
+
+      <button class="btn-primary" id="btnGenerar" onclick="generarPlan()" disabled>✨ Generar mi plan de hoy</button>
+      <div class="generando" id="generandoMsg" style="display:none;">Creando tu plan personalizado...</div>
+    </div>
+  </div>
+
+  <div class="resultado" id="resultado">
+
+    <div class="plan-cab">
+      <div class="plan-cab-top">
+        <div class="plan-cab-icon" id="planIcon"></div>
+        <div>
+          <div class="plan-cab-eyebrow" id="planCabEyebrow">Tu plan de hoy</div>
+          <div class="plan-cab-title" id="planTitle"></div>
+        </div>
+      </div>
+      <div class="tiempo-total" id="tiempoTotal">
+        <div class="tiempo-seg tiempo-seg-1" id="seg1"></div>
+        <div class="tiempo-seg tiempo-seg-2" id="seg2"></div>
+        <div class="tiempo-seg tiempo-seg-3" id="seg3"></div>
+      </div>
+      <div class="tiempo-labels">
+        <span class="tiempo-label" id="tl1"></span>
+        <span class="tiempo-label" id="tl2"></span>
+        <span class="tiempo-label" id="tl3"></span>
+      </div>
+    </div>
+
+    <div class="progreso-plan" id="progresoPlan">
+      <div class="pp-label">
+        <span>Progreso del plan</span>
+        <span id="ppPct">0 / 3 bloques</span>
+      </div>
+      <div class="pp-bar-track">
+        <div class="pp-bar-fill" id="ppFill" style="width:0%"></div>
+      </div>
+      <div class="pp-bloques" id="ppBloques"></div>
+    </div>
+
+    <!-- PREPÁRATE TÚ PRIMERO -->
+    <div class="preparate" id="preparateBlock">
+      <div class="prep-eyebrow">Antes de empezar · 60 segundos</div>
+      <div class="prep-titulo">Prepárate tú primero</div>
+      <div class="prep-pasos">
+        <div class="prep-paso">
+          <div class="prep-paso-num">1</div>
+          <div class="prep-paso-text"><strong>Suelta los hombros.</strong> Nota si los tienes subidos hacia las orejas. Déjalos caer.</div>
+        </div>
+        <div class="prep-paso">
+          <div class="prep-paso-num">2</div>
+          <div class="prep-paso-text"><strong>Respira despacio.</strong> Una respiración profunda. Tu sistema nervioso se lo transmite al suyo.</div>
+        </div>
+        <div class="prep-paso">
+          <div class="prep-paso-num">3</div>
+          <div class="prep-paso-text"><strong>Suelta la expectativa.</strong> En los próximos 15 minutos no esperas nada concreto. Solo estás presente.</div>
+        </div>
+      </div>
+      <div class="prep-timer-wrap">
+        <div class="prep-timer-display" id="prepTimer">1:00</div>
+        <div class="prep-timer-btns">
+          <button class="prep-btn-start" id="prepBtnStart" onclick="togglePrepTimer()">▶ Iniciar</button>
+          <button class="prep-btn-listo" onclick="marcarPrepListo()">✓ Lista</button>
+        </div>
+      </div>
+      <div class="prep-completado" id="prepCompletado">✨ Perfecta. Tu cerebro y el suyo ya están más sincronizados de lo que crees.</div>
+    </div>
+
+    <div class="bloques-lista" id="bloquesLista"></div>
+
+    <div class="plan-completado" id="planCompletado">
+      <div class="pc-icon">🌟</div>
+      <div class="pc-title">¡Plan completado!</div>
+      <div class="pc-text">Acabas de hacer algo extraordinario: quince minutos de acompañamiento con intención. Eso es más de lo que la mayoría consigue. Tu hijo lo ha recibido, aunque todavía no puedas verlo todo.</div>
+      <div class="pc-racha" id="rachaTexto"></div>
+    </div>
+
+    <div class="nota-final">
+      <div class="nf-icon">🧭</div>
+      <div class="nf-text" id="notaFinal"></div>
+    </div>
+
+    <div class="reflexion-box" id="reflexionBox">
+      <div class="reflexion-label">¿Qué notaste hoy?</div>
+      <textarea class="nota-libre" id="reflexionTexto" placeholder="Ej: dijo 'agua' sin que se lo pidiera, o esta vez me miró más rato de lo normal..." maxlength="300"></textarea>
+      <button class="btn-secondary" id="btnGuardarReflexion" onclick="guardarReflexion()">Guardar lo que noté</button>
+      <div class="reflexion-guardado" id="reflexionGuardado">✓ Guardado — esto se irá sumando a tu registro de avances</div>
+    </div>
+
+    <button class="btn-secondary" onclick="reiniciar()">Elegir otro borde</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// URL de la Edge Function de Supabase que genera el plan con Claude.
+// La clave de Anthropic vive solo ahí, nunca en este archivo.
+const EDGE_FUNCTION_URL = 'https://tcxxfhxdgvxziruwcrfj.supabase.co/functions/v1/generar-plan';
+
+const CONTEXTOS = [
+  { id: 'coche', icon: '🚗', nombre: 'En el coche' },
+  { id: 'comidas', icon: '🍽️', nombre: 'En la comida' },
+  { id: 'bano', icon: '🛁', nombre: 'En el baño' },
+  { id: 'juego', icon: '🧩', nombre: 'Jugando' },
+  { id: 'caminando', icon: '🚶', nombre: 'Caminando' }
+];
+
+const NIVELES = [
+  { id: 'domina', label: 'Ya lo domina' },
+  { id: 'emergiendo', label: 'Está emergiendo' },
+  { id: 'lejos', label: 'Todavía lejos' }
+];
+
+const BORDES = [
+  { id: 'conexion', num: 1, icon: '👁️', nombre: 'Conexión' },
+  { id: 'atencion', num: 2, icon: '👀', nombre: 'Atención compartida' },
+  { id: 'intencion', num: 3, icon: '🤲', nombre: 'Intención comunicativa' },
+  { id: 'imitacion', num: 4, icon: '🪞', nombre: 'Imitación' },
+  { id: 'palabras', num: 5, icon: '💬', nombre: 'Palabras' },
+  { id: 'combinacion', num: 6, icon: '🔗', nombre: 'Combinación' },
+  { id: 'frases', num: 7, icon: '📝', nombre: 'Frases' },
+  { id: 'conversacion', num: 8, icon: '🗣️', nombre: 'Conversación' },
+  { id: 'narracion', num: 9, icon: '📖', nombre: 'Narración' },
+  { id: 'pensamiento', num: 10, icon: '🧠', nombre: 'Expresión compleja' }
+];
+
+const PLANES = {
+  conexion: {
+    nota: '<strong>Recuerda:</strong> en este borde no buscas respuesta. Buscas presencia. Si hace algo diferente hoy, si te mira un segundo más, si acepta tu entrada en su juego: eso es el plan funcionando.',
+    bloques: [
+      {
+        minutos: 5,
+        contexto: 'En el juego libre',
+        titulo: 'Entra en su mundo sin agenda',
+        desc: 'Siéntate a su lado y observa lo que hace durante un minuto. Después únete usando los mismos objetos, siguiendo su ritmo. No dirijas, no corrijas, no preguntes. Solo juega como él juega.',
+        frase: '«Mira, yo también tengo un coche. El mío va por aquí.»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En una rutina cotidiana',
+        titulo: 'Presencia sin demanda',
+        desc: 'Elige un momento de cuidado (baño, comida, vestirse) y hazlo más despacio de lo habitual. Narra lo que estás haciendo con voz calmada. No pidas que participe. Solo que experimente que estás ahí.',
+        frase: '«Ahora te pongo el jabón. Así, suavecito. Qué bien huele.»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En el coche o caminando',
+        titulo: 'Reacciona al mundo juntos',
+        desc: 'Durante un trayecto, reacciona en voz alta a lo que veáis. Un perro, un coche grande, una flor. Sin preguntar qué es. Solo compartir tu reacción genuina y observar si algo cambia en él.',
+        frase: '«¡Mira ese perro tan grande! ¡Guau!»',
+        segundos: 300
+      }
+    ]
+  },
+  atencion: {
+    nota: '<strong>Recuerda:</strong> el objetivo no es que te mire a ti. Es que los dos miréis lo mismo. Ese momento compartido, aunque dure un segundo, es exactamente lo que estamos construyendo.',
+    bloques: [
+      {
+        minutos: 3,
+        contexto: 'En cualquier momento',
+        titulo: 'El juego de señalar y esperar',
+        desc: 'Señala algo que esté cerca: un objeto, algo que pase por la ventana, algo en la pantalla. Di su nombre en voz alta y haz una pausa. Espera tres segundos. Observa si mira. Sin pedir nada más.',
+        frase: '«¡Mira, el pájaro! ¿Lo ves?» (pausa)',
+        segundos: 180
+      },
+      {
+        minutos: 7,
+        contexto: 'En el juego',
+        titulo: 'Burbujas o algo que sorprenda',
+        desc: 'Elige una actividad que genere sorpresa natural: burbujas, agua, un juguete nuevo, música. Haz algo inesperado con ello y reacciona con entusiasmo. Espera su reacción antes de continuar.',
+        frase: '«¡Uy, se fue volando la burbuja! ¡Mira, mira!»',
+        segundos: 420
+      },
+      {
+        minutos: 5,
+        contexto: 'Con un libro o imágenes',
+        titulo: 'Mirar juntos sin preguntar',
+        desc: 'Siéntate con él y mira un libro o unas fotos. No preguntes qué es nada. Solo señala cosas que te llamen la atención y coméntalas. Observa si dirige su mirada hacia donde señalas tú.',
+        frase: '«Ah, aquí hay un oso. Ese oso es muy grande.»',
+        segundos: 300
+      }
+    ]
+  },
+  intencion: {
+    nota: '<strong>Recuerda:</strong> acepta cualquier forma de comunicación. Una mirada, un sonido, un gesto. No esperes la forma perfecta. Responde al intento, y el cerebro aprenderá que comunicar funciona.',
+    bloques: [
+      {
+        minutos: 5,
+        contexto: 'En la comida o merienda',
+        titulo: 'Sirve poco y espera',
+        desc: 'Da una pequeña cantidad de algo que le guste. Cuando termine, espera. No anticipes. Deja que necesite pedir más. Acepta cualquier forma en que lo haga: mirada, gesto, sonido o palabra.',
+        frase: 'Cuando intente comunicar: «¡Ah, quieres más! Aquí tienes.»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En el juego',
+        titulo: 'Para y espera su señal',
+        desc: 'Empieza un juego que le guste (una canción, rodar una pelota, un juego de cosquillas). Después de un momento, para completamente. Míralo. Espera a que haga algo para que continúes. Entonces continúa inmediatamente.',
+        frase: 'Cuando pida que continúes: «¡Ah, quieres más! ¡Vamos!»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En cualquier momento',
+        titulo: 'Crea una pequeña barrera',
+        desc: 'Pon algo que quiera dentro de un recipiente cerrado, fuera de su alcance o detrás de algo. Espera que busque tu ayuda de alguna forma. Responde inmediatamente a cualquier intento.',
+        frase: '«¿Me lo pides? Claro, te ayudo.» / «¿Esto quieres? Aquí lo tienes.»',
+        segundos: 300
+      }
+    ]
+  },
+  imitacion: {
+    nota: '<strong>Recuerda:</strong> empieza imitándole a él. Cuando descubre que alguien le copia, a veces empieza a hacer cosas intencionalmente para que las repitas. Esa es la puerta.',
+    bloques: [
+      {
+        minutos: 5,
+        contexto: 'Cara a cara',
+        titulo: 'Sé su espejo',
+        desc: 'Siéntate frente a él y copia exactamente lo que hace: si mueve las manos, muévelas tú. Si hace un sonido, repítelo. Si hace una cara, hazla tú. Durante cinco minutos, tú eres su espejo.',
+        frase: 'Sin palabras. Solo copiar lo que él hace.',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'Con canciones',
+        titulo: 'Canciones con gestos',
+        desc: 'Pon una canción con gestos (palmadas, brazos arriba, girar). Hazlos tú de forma exagerada y divertida. No pidas que los haga. Solo que vea cómo tú lo disfrutas. Si intenta algún gesto, celébralo.',
+        frase: '«¡Palmadas! ¡Así! ¡Qué divertido!»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En el juego',
+        titulo: 'El turno de imitar',
+        desc: 'Juega con objetos haciendo acciones simples: mete la pelota, sácala, golpea la mesa, esconde algo. Después de cada acción, pausa y observa si intenta hacer lo mismo. Si no, vuelve a hacerlo tú.',
+        frase: '«Ahora tú.» (pausa) / «¡Lo hiciste! ¡Igual que yo!»',
+        segundos: 300
+      }
+    ]
+  },
+  palabras: {
+    nota: '<strong>Recuerda:</strong> no corrijas la pronunciación. Si intenta decir la palabra aunque no salga perfecta, responde como si la hubiera dicho bien. El éxito es lo que hace que el cerebro siga intentándolo.',
+    bloques: [
+      {
+        minutos: 5,
+        contexto: 'En la comida o rutina',
+        titulo: 'La palabra del día en contexto',
+        desc: 'Elige una sola palabra hoy: "más", "abre", "ayuda" o cualquiera de alta motivación. Úsala tú cada vez que tenga sentido durante la comida o rutina. Sin pedir que la repita. Solo mostrarla en su contexto natural.',
+        frase: '«Más. ¿Quieres más? Más pasta.» (cada vez que sirvas)',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En el juego',
+        titulo: 'Palabras de acción en el juego',
+        desc: 'Durante el juego libre, modela palabras de acción justo cuando ocurren: "cae" cuando algo se cae, "va" cuando el coche arranca, "para" cuando para. La palabra siempre en el momento exacto.',
+        frase: '«¡Cae!» / «¡Va!» / «¡Para!» / «¡Salta!»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'Caminando o en el coche',
+        titulo: 'Nombra lo que mira él',
+        desc: 'Observa hacia dónde dirige su atención y pon nombre a eso. No nombres todo lo que ves tú. Nombres lo que mira él. La palabra que nace de su atención es la que el cerebro registra más profundo.',
+        frase: '«Perro.» / «Coche.» / «Agua.» (cuando él lo mire)',
+        segundos: 300
+      }
+    ]
+  },
+  combinacion: {
+    nota: '<strong>Recuerda:</strong> la regla de oro es ampliar, no corregir. Cuando dice una palabra, tú dices dos. Sin pedir que repita. Sin señalar el error. Solo mostrar el siguiente paso.',
+    bloques: [
+      {
+        minutos: 5,
+        contexto: 'En la comida',
+        titulo: 'Amplía todo lo que dice',
+        desc: 'Durante la comida, cada vez que diga una palabra, amplíala con una más. Si dice "agua", di "más agua". Si dice "pan", di "pan tostado". Sin pedir que repita. Solo mostrar la combinación en contexto.',
+        frase: 'Él: «Agua.» / Tú: «Más agua. Aquí tienes más agua.»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En el juego',
+        titulo: 'Describe la acción con dos palabras',
+        desc: 'Mientras jugáis, describe lo que pasa con combinaciones simples. "Coche va", "pelota cae", "muñeco duerme". Breve, en el momento exacto, sin esperar respuesta.',
+        frase: '«Coche va.» / «Torre cae.» / «Perro corre.»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En cualquier momento',
+        titulo: 'Modela "más + objeto" veinte veces',
+        desc: 'Elige "más + lo que sea" como combinación del día. Úsala en todos los contextos posibles durante estos cinco minutos. Más zumo, más canción, más juego, más besos. La repetición en distintos contextos es clave.',
+        frase: '«Más música.» / «Más juego.» / «Más abrazos.»',
+        segundos: 300
+      }
+    ]
+  },
+  frases: {
+    nota: '<strong>Recuerda:</strong> no corrijas la gramática todavía. Cuando diga algo incompleto, di tú la versión más completa de forma natural en la conversación. Sin señalar el error. Sin pedir que lo repita.',
+    bloques: [
+      {
+        minutos: 5,
+        contexto: 'En la rutina del baño o comida',
+        titulo: 'Frases de rutina fijas',
+        desc: 'Elige tres frases que vas a decir siempre en los mismos momentos de la rutina. Hoy empieza a usarlas. La repetición en contexto es lo que hace que el cerebro las organice y las reproduzca después.',
+        frase: '«¡Hora del baño!» / «El agua está caliente.» / «¡Ya estamos listos!»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En el juego',
+        titulo: 'Dale voz a los juguetes',
+        desc: 'Pon voz a los personajes o juguetes usando frases cortas. "El coche dice: ¡Voy muy rápido!" "El muñeco dice: ¡Tengo hambre!" Frases simples, expresivas, repetidas dentro del juego.',
+        frase: '«El dinosaurio dice: ¡Tengo mucho sueño!»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'Caminando o en el coche',
+        titulo: 'Describe lo que ves con frases cortas',
+        desc: 'Durante el trayecto, describe lo que veis con frases simples y sin preguntar. "Ese perro está solo." "Hay muchos coches hoy." "Ese árbol es muy alto." Una frase cada treinta segundos, aproximadamente.',
+        frase: '«Ese camión va muy rápido.» / «Hay poca gente hoy.»',
+        segundos: 300
+      }
+    ]
+  },
+  conversacion: {
+    nota: '<strong>Recuerda:</strong> comenta más y pregunta menos. Y cuando hagas una pregunta, espera de verdad. Más de lo que te resulta cómodo. El silencio no es vacío: es el cerebro organizándose para responder.',
+    bloques: [
+      {
+        minutos: 5,
+        contexto: 'En la comida',
+        titulo: 'Cinco comentarios sin preguntas',
+        desc: 'Durante la comida, haz cinco comentarios sobre lo que está pasando sin hacer ninguna pregunta directa. Observa cuántas veces responde a un comentario. Cada respuesta es un turno conversacional.',
+        frase: '«Esta sopa huele muy bien hoy.» / «Elegiste el vaso azul.»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En el juego',
+        titulo: 'Turnos de juego como conversación',
+        desc: 'Juega con turnos muy marcados: tú haces algo, él hace algo, tú respondes a lo que hizo él. No dirijas. Sigue lo que él propone. Cada turno es una conversación sin palabras que prepara las conversaciones con palabras.',
+        frase: '«Ahora tú.» / «Ah, así lo hacías tú. Mira, ahora yo.»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En el coche o antes de dormir',
+        titulo: 'Comparte algo tuyo primero',
+        desc: 'Cuéntale algo que te pasó a ti hoy. Algo pequeño. Sin pedir que él cuente nada. Solo comparte. A veces la conversación recíproca empieza cuando el niño descubre que tú también tienes cosas que contar.',
+        frase: '«Hoy a mí me pasó algo gracioso. Vi un perro que llevaba un sombrero.»',
+        segundos: 300
+      }
+    ]
+  },
+  narracion: {
+    nota: '<strong>Recuerda:</strong> no esperes la historia completa. Empieza tú, deja espacio y acepta cualquier cosa que añada como una contribución válida. La narración compartida es más poderosa que la narración en solitario.',
+    bloques: [
+      {
+        minutos: 3,
+        contexto: 'Justo después de una actividad',
+        titulo: 'Narra lo que acaba de pasar',
+        desc: 'Cuando terminéis algo (el parque, la comida, un juego), nárraselo inmediatamente. "Primero hicimos esto. Después aquello. Al final llegamos a casa." La memoria está fresca: es el mejor momento.',
+        frase: '«Primero fuimos al parque. Después viste un perro. Al final comimos.»',
+        segundos: 180
+      },
+      {
+        minutos: 7,
+        contexto: 'Con fotos del móvil',
+        titulo: 'Narra con apoyo visual',
+        desc: 'Abre el móvil y busca fotos de algo que hayáis hecho juntos recientemente. Míralas con él y nárralas en orden. Señala cada foto, di qué pasó, y deja espacio para que añada algo. Las fotos reducen la carga de memoria.',
+        frase: '«Aquí llegamos. Aquí viste el perro. Aquí comimos el helado.»',
+        segundos: 420
+      },
+      {
+        minutos: 5,
+        contexto: 'Con un cuento',
+        titulo: 'Narra la estructura del cuento',
+        desc: 'Lee un cuento conocido. Antes de empezar: "¿Qué pasa al principio?" Al llegar al momento clave: "¿Y qué pasó después?" Al terminar: "¿Cómo terminó?" Solo tres preguntas. Con apoyo total si lo necesita.',
+        frase: '«Al principio el oso estaba solo. Después encontró a sus amigos. Al final...»',
+        segundos: 300
+      }
+    ]
+  },
+  pensamiento: {
+    nota: '<strong>Recuerda:</strong> el pensamiento complejo se aprende escuchándolo. No hace falta que lo reproduzca todavía. Con que escuche cómo tú organizas el pensamiento en voz alta, el cerebro está aprendiendo.',
+    bloques: [
+      {
+        minutos: 5,
+        contexto: 'En cualquier momento del día',
+        titulo: 'Piensa en voz alta junto a él',
+        desc: 'Elige algo que vayas a hacer y narra tu proceso de pensamiento mientras lo decides. "A ver, necesito el abrigo porque hace frío. Y las llaves. ¿Dónde están las llaves? Ah, en el bolso." El razonamiento modelado en voz alta.',
+        frase: '«Hmm, ¿qué hacemos primero? Creo que primero esto porque...»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'Ante algo que ocurra',
+        titulo: 'Nombra emociones en el momento',
+        desc: 'Cuando aparezca una emoción (suya o tuya), nómbrala con causa. No como corrección. Como observación. "Parece que estás frustrado porque no salió como querías." "Yo estoy un poco cansada pero muy contenta."',
+        frase: '«Creo que estás enfadado porque se rompió. Eso da mucha rabia.»',
+        segundos: 300
+      },
+      {
+        minutos: 5,
+        contexto: 'En el juego o con un cuento',
+        titulo: 'Perspectiva de los personajes',
+        desc: 'Durante el juego o la lectura, pregunta cómo se sienten los personajes y por qué. Sin esperar respuesta perfecta. Si no responde, tú lo dices. La perspectiva emocional de otros es el puente hacia la empatía verbal.',
+        frase: '«¿Cómo crees que se siente el oso ahora? Yo creo que está triste porque...»',
+        segundos: 300
+      }
+    ]
+  }
+};
+
+let bordeSeleccionado = null;
+let contextoSeleccionado = null;
+let nivelSeleccionado = null;
+let timers = {};
+let intervalos = {};
+let completados = new Set();
+let prepTimerSeg = 60;
+let prepIntervalo = null;
+let prepListo = false;
+
+// --- Sonido, vibración y pantalla encendida mientras corre un temporizador ---
+let audioCtx = null;
+let wakeLock = null;
+let timersActivos = 0;
+
+function reproducirSonido() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const ahora = audioCtx.currentTime;
+    [0, 0.18, 0.36].forEach((delay, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = i === 2 ? 880 : 660;
+      gain.gain.setValueAtTime(0.0001, ahora + delay);
+      gain.gain.exponentialRampToValueAtTime(0.25, ahora + delay + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ahora + delay + 0.15);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(ahora + delay);
+      osc.stop(ahora + delay + 0.16);
+    });
+  } catch (e) { console.warn('No se pudo reproducir sonido:', e); }
+}
+
+function vibrar() {
+  if (navigator.vibrate) {
+    try { navigator.vibrate([120, 60, 120]); } catch (e) {}
+  }
+}
+
+async function pedirPantallaEncendida() {
+  timersActivos++;
+  if (!('wakeLock' in navigator) || wakeLock) return;
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => { wakeLock = null; });
+  } catch (e) { console.warn('No se pudo mantener la pantalla encendida:', e); }
+}
+
+function soltarPantallaEncendida() {
+  timersActivos = Math.max(0, timersActivos - 1);
+  if (timersActivos === 0 && wakeLock) {
+    wakeLock.release().catch(() => {});
+    wakeLock = null;
+  }
+}
+
+// Si el móvil bloquea la pantalla y el usuario vuelve, reactiva el wake lock si aún hay timers activos
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible' && timersActivos > 0 && 'wakeLock' in navigator && !wakeLock) {
+    try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+  }
+});
+
+function timerTerminado() {
+  reproducirSonido();
+  vibrar();
+}
+
+function guardarReflexion() {
+  const texto = document.getElementById('reflexionTexto').value.trim();
+  if (!texto) return;
+  try {
+    const clave = 'nm_reflexiones';
+    const previas = JSON.parse(localStorage.getItem(clave) || '[]');
+    previas.push({
+      fecha: new Date().toISOString(),
+      borde: bordeSeleccionado,
+      contexto: contextoSeleccionado,
+      texto,
+    });
+    localStorage.setItem(clave, JSON.stringify(previas));
+  } catch (e) { console.warn('No se pudo guardar localmente:', e); }
+
+  const msg = document.getElementById('reflexionGuardado');
+  msg.className = 'reflexion-guardado show';
+  document.getElementById('btnGuardarReflexion').textContent = '✓ Guardado';
+  document.getElementById('btnGuardarReflexion').disabled = true;
+}
+
+function togglePrepTimer() {
+  if (prepIntervalo) {
+    clearInterval(prepIntervalo);
+    prepIntervalo = null;
+    document.getElementById('prepBtnStart').textContent = '▶ Continuar';
+    soltarPantallaEncendida();
+  } else {
+    document.getElementById('prepBtnStart').textContent = '⏸ Pausar';
+    pedirPantallaEncendida();
+    prepIntervalo = setInterval(() => {
+      prepTimerSeg--;
+      document.getElementById('prepTimer').textContent = formatTime(prepTimerSeg);
+      if (prepTimerSeg <= 0) {
+        clearInterval(prepIntervalo);
+        prepIntervalo = null;
+        document.getElementById('prepTimer').textContent = '0:00';
+        document.getElementById('prepTimer').className = 'prep-timer-display terminado';
+        document.getElementById('prepBtnStart').textContent = '✓ Hecho';
+        timerTerminado();
+        soltarPantallaEncendida();
+        marcarPrepListo();
+      }
+    }, 1000);
+  }
+}
+
+function marcarPrepListo() {
+  if (prepIntervalo) { clearInterval(prepIntervalo); prepIntervalo = null; }
+  prepListo = true;
+  document.getElementById('prepCompletado').className = 'prep-completado show';
+  document.getElementById('prepBtnStart').disabled = true;
+  document.getElementById('prepTimer').className = 'prep-timer-display terminado';
+}
+
+function init() {
+  const grid = document.getElementById('bordesGrid');
+  grid.innerHTML = BORDES.map(b => `
+    <button class="borde-btn" id="bb-${b.id}" onclick="selBorde('${b.id}')">
+      <div class="bb-icon">${b.icon}</div>
+      <div class="bb-num">BORDE ${b.num}</div>
+      <div class="bb-name">${b.nombre}</div>
+    </button>
+  `).join('');
+
+  const ctxGrid = document.getElementById('contextoGrid');
+  ctxGrid.innerHTML = CONTEXTOS.map(c => `
+    <button class="borde-btn" id="cc-${c.id}" onclick="selContexto('${c.id}')">
+      <div class="bb-icon">${c.icon}</div>
+      <div class="bb-name">${c.nombre}</div>
+    </button>
+  `).join('');
+
+  const nivelGrid = document.getElementById('nivelGrid');
+  nivelGrid.innerHTML = NIVELES.map(n => `
+    <button class="nivel-btn" id="nn-${n.id}" onclick="selNivel('${n.id}')">${n.label}</button>
+  `).join('');
+}
+
+function selBorde(id) {
+  bordeSeleccionado = id;
+  BORDES.forEach(b => {
+    document.getElementById(`bb-${b.id}`).className = `borde-btn${b.id === id ? ' active' : ''}`;
+  });
+  const empieza = document.querySelector('.empieza-aqui');
+  if (empieza) empieza.style.display = 'none';
+  document.getElementById('cardDetalle').style.display = 'block';
+  setTimeout(() => document.getElementById('cardDetalle').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+function selContexto(id) {
+  contextoSeleccionado = id;
+  CONTEXTOS.forEach(c => {
+    document.getElementById(`cc-${c.id}`).className = `borde-btn${c.id === id ? ' active' : ''}`;
+  });
+  updateBtnGenerar();
+}
+
+function selNivel(id) {
+  nivelSeleccionado = id;
+  NIVELES.forEach(n => {
+    document.getElementById(`nn-${n.id}`).className = `nivel-btn${n.id === id ? ` active-${n.id}` : ''}`;
+  });
+  updateBtnGenerar();
+}
+
+function updateBtnGenerar() {
+  document.getElementById('btnGenerar').disabled = !(bordeSeleccionado && contextoSeleccionado && nivelSeleccionado);
+}
+
+async function generarPlan() {
+  const btn = document.getElementById('btnGenerar');
+  const msg = document.getElementById('generandoMsg');
+  btn.disabled = true;
+  msg.style.display = 'block';
+
+  const notaLibre = document.getElementById('notaLibre').value.trim();
+
+  try {
+    await window.__authReady;
+    if (!window.__sb || !window.__session) throw new Error('Sin sesión activa');
+
+    const resp = await fetch(EDGE_FUNCTION_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${window.__session.access_token}`,
+      },
+      body: JSON.stringify({
+        bordeId: bordeSeleccionado,
+        contextoId: contextoSeleccionado,
+        nivel: nivelSeleccionado,
+        notaLibre: notaLibre || undefined,
+      }),
+    });
+
+    if (!resp.ok) throw new Error(`Edge function respondió ${resp.status}`);
+    const { plan } = await resp.json();
+    if (!plan || !plan.bloques) throw new Error('Plan vacío');
+
+    verPlanConDatos(plan, true);
+  } catch (err) {
+    console.warn('No se pudo generar el plan personalizado, usando plan estándar:', err);
+    const planEstandar = PLANES[bordeSeleccionado];
+    verPlanConDatos(planEstandar, false);
+    showToast('No se pudo personalizar del todo hoy — aquí tienes tu plan de este borde');
+  } finally {
+    btn.disabled = false;
+    msg.style.display = 'none';
+  }
+}
+
+function verPlanConDatos(plan, esPersonalizado) {
+  const borde = BORDES.find(b => b.id === bordeSeleccionado);
+
+  completados = new Set();
+  timers = {};
+  intervalos = {};
+
+  // Reset prep timer
+  if (prepIntervalo) { clearInterval(prepIntervalo); prepIntervalo = null; }
+  prepTimerSeg = 60;
+  prepListo = false;
+  document.getElementById('prepTimer').textContent = '1:00';
+  document.getElementById('prepTimer').className = 'prep-timer-display';
+  document.getElementById('prepBtnStart').textContent = '▶ Iniciar';
+  document.getElementById('prepBtnStart').disabled = false;
+  document.getElementById('prepCompletado').className = 'prep-completado';
+
+  document.getElementById('planIcon').textContent = borde.icon;
+  document.getElementById('planTitle').textContent = `${borde.nombre} · 15 minutos`;
+  document.getElementById('planCabEyebrow').textContent = esPersonalizado ? 'Tu plan de hoy, solo para vosotros' : 'Tu plan de hoy';
+  document.getElementById('notaFinal').innerHTML = plan.nota;
+
+  // Barra de tiempo proporcional
+  const total = plan.bloques.reduce((s, b) => s + b.minutos, 0);
+  plan.bloques.forEach((b, i) => {
+    const pct = (b.minutos / total) * 100;
+    const seg = document.getElementById(`seg${i + 1}`);
+    if (seg) seg.style.flex = pct;
+    const tl = document.getElementById(`tl${i + 1}`);
+    if (tl) tl.textContent = `${b.minutos} min`;
+  });
+
+  // Mini bloques progreso
+  document.getElementById('ppBloques').innerHTML = plan.bloques.map((b, i) => `
+    <div class="pp-bloque" id="ppb-${i}">Bloque ${i + 1}<br>${b.minutos} min</div>
+  `).join('');
+
+  // Bloques principales
+  const colors = ['bn-1', 'bn-2', 'bn-3'];
+  document.getElementById('bloquesLista').innerHTML = plan.bloques.map((b, i) => `
+    <div class="bloque-card" id="bloque-${i}">
+      <div class="bloque-top">
+        <div class="bloque-num-wrap">
+          <div class="bloque-num ${colors[i]}">${i + 1}</div>
+          <div class="bloque-minutos">${b.minutos} min</div>
+        </div>
+        <div class="bloque-info">
+          <div class="bloque-contexto">${b.contexto}</div>
+          <div class="bloque-titulo">${b.titulo}</div>
+        </div>
+        <div class="bloque-check" id="check-${i}">✓</div>
+      </div>
+      <div class="bloque-body">
+        <div class="bloque-desc">${b.desc}</div>
+        <div class="frase-modelado">
+          <div class="fm-label">🗣️ Qué decir</div>
+          <div class="fm-frase">${b.frase}</div>
+        </div>
+        <div class="timer-wrap">
+          <div class="timer-display" id="timer-${i}">${formatTime(b.segundos)}</div>
+          <div class="timer-btns">
+            <button class="timer-btn timer-start" id="tbtn-${i}" onclick="toggleTimer(${i}, ${b.segundos})">▶ Iniciar</button>
+            <button class="timer-btn timer-reset" onclick="resetTimer(${i}, ${b.segundos})">↺</button>
+            <button class="timer-btn timer-marcar" onclick="marcarHecho(${i})">✓ Hecho</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Init timers
+  plan.bloques.forEach((b, i) => {
+    timers[i] = b.segundos;
+  });
+
+  document.getElementById('planCompletado').className = 'plan-completado';
+  document.getElementById('resultado').className = 'resultado show';
+  setTimeout(() => document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
+function toggleTimer(idx, total) {
+  if (intervalos[idx]) {
+    clearInterval(intervalos[idx]);
+    intervalos[idx] = null;
+    document.getElementById(`tbtn-${idx}`).textContent = '▶ Continuar';
+    document.getElementById(`timer-${idx}`).className = 'timer-display';
+    soltarPantallaEncendida();
+  } else {
+    document.getElementById(`tbtn-${idx}`).textContent = '⏸ Pausar';
+    document.getElementById(`timer-${idx}`).className = 'timer-display corriendo';
+    pedirPantallaEncendida();
+    intervalos[idx] = setInterval(() => {
+      timers[idx]--;
+      document.getElementById(`timer-${idx}`).textContent = formatTime(timers[idx]);
+      if (timers[idx] <= 0) {
+        clearInterval(intervalos[idx]);
+        intervalos[idx] = null;
+        document.getElementById(`timer-${idx}`).textContent = '0:00';
+        document.getElementById(`timer-${idx}`).className = 'timer-display terminado';
+        document.getElementById(`tbtn-${idx}`).textContent = '✓ Terminó';
+        timerTerminado();
+        soltarPantallaEncendida();
+        showToast(`⏰ Bloque ${idx + 1} terminado`);
+      }
+    }, 1000);
+  }
+}
+
+function resetTimer(idx, total) {
+  if (intervalos[idx]) {
+    clearInterval(intervalos[idx]);
+    intervalos[idx] = null;
+    soltarPantallaEncendida();
+  }
+  timers[idx] = total;
+  document.getElementById(`timer-${idx}`).textContent = formatTime(total);
+  document.getElementById(`timer-${idx}`).className = 'timer-display';
+  document.getElementById(`tbtn-${idx}`).textContent = '▶ Iniciar';
+}
+
+function marcarHecho(idx) {
+  completados.add(idx);
+  document.getElementById(`check-${idx}`).className = 'bloque-check hecho';
+  document.getElementById(`bloque-${idx}`).className = 'bloque-card completado';
+  if (intervalos[idx]) {
+    clearInterval(intervalos[idx]);
+    intervalos[idx] = null;
+    soltarPantallaEncendida();
+  }
+  actualizarProgreso();
+  showToast(`✓ Bloque ${idx + 1} completado`);
+}
+
+function actualizarProgreso() {
+  const n = completados.size;
+  const pct = (n / 3) * 100;
+  document.getElementById('ppFill').style.width = pct + '%';
+  document.getElementById('ppPct').textContent = `${n} / 3 bloques`;
+
+  completados.forEach(i => {
+    document.getElementById(`ppb-${i}`).className = 'pp-bloque hecho';
+  });
+
+  if (n === 3) {
+    document.getElementById('planCompletado').className = 'plan-completado show';
+    document.getElementById('reflexionBox').className = 'reflexion-box show';
+    actualizarRacha();
+    setTimeout(() => document.getElementById('planCompletado').scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
+  }
+}
+
+// --- Racha de d\u00edas seguidos ---
+function hoyISO() {
+  const d = new Date();
+  const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d - tz).toISOString().slice(0, 10);
+}
+
+function diasEntre(fechaA, fechaB) {
+  const a = new Date(fechaA + 'T00:00:00');
+  const b = new Date(fechaB + 'T00:00:00');
+  return Math.round((b - a) / (1000 * 60 * 60 * 24));
+}
+
+async function actualizarRacha() {
+  try {
+    await window.__authReady;
+    if (!window.__sb || !window.__session) return;
+    const sb = window.__sb;
+    const userId = window.__session.user.id;
+    const hoy = hoyISO();
+
+    const { data: fila, error: errSelect } = await sb
+      .from('racha_actividad')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (errSelect) throw errSelect;
+
+    let nuevaRacha, rachaMaxima, esPrimerDia = false, seRompio = false, yaHoy = false;
+
+    if (!fila) {
+      nuevaRacha = 1;
+      rachaMaxima = 1;
+      esPrimerDia = true;
+      const { error } = await sb.from('racha_actividad').insert({
+        user_id: userId, ultima_fecha: hoy, racha_actual: 1, racha_maxima: 1,
+      });
+      if (error) throw error;
+    } else if (fila.ultima_fecha === hoy) {
+      nuevaRacha = fila.racha_actual;
+      rachaMaxima = fila.racha_maxima;
+      yaHoy = true;
+    } else {
+      const dias = diasEntre(fila.ultima_fecha, hoy);
+      if (dias === 1) {
+        nuevaRacha = fila.racha_actual + 1;
+      } else {
+        nuevaRacha = 1;
+        seRompio = fila.racha_actual > 1;
+      }
+      rachaMaxima = Math.max(fila.racha_maxima, nuevaRacha);
+      const { error } = await sb.from('racha_actividad')
+        .update({ ultima_fecha: hoy, racha_actual: nuevaRacha, racha_maxima: rachaMaxima })
+        .eq('user_id', userId);
+      if (error) throw error;
+    }
+
+    mostrarRacha(nuevaRacha, esPrimerDia, seRompio, yaHoy);
+  } catch (e) {
+    console.warn('No se pudo actualizar la racha:', e);
+    // Si falla, la pantalla de completado sigue funcionando con su mensaje normal.
+  }
+}
+
+function mostrarRacha(racha, esPrimerDia, seRompio, yaHoy) {
+  const el = document.getElementById('rachaTexto');
+  if (!el) return;
+  let texto;
+  if (esPrimerDia) {
+    texto = '🌟 Empezaste algo importante hoy.';
+  } else if (yaHoy) {
+    texto = racha >= 2
+      ? `🔥 Ya llevas ${racha} días seguidos — y hoy hiciste todavía más.`
+      : 'Ya practicaste hoy, y aun así volviste a por más. Eso también cuenta. 🌟';
+  } else if (seRompio) {
+    texto = 'Volviste. Eso también cuenta. 🌱';
+  } else if (racha >= 2) {
+    texto = `🔥 ${racha} días seguidos trabajando con tu hijo.`;
+  } else {
+    texto = '🌟 Otro día, otro paso adelante.';
+  }
+  el.textContent = texto;
+  el.className = 'pc-racha show';
+}
+
+function reiniciar() {
+  Object.values(intervalos).forEach(i => { if (i) clearInterval(i); });
+  if (prepIntervalo) { clearInterval(prepIntervalo); prepIntervalo = null; }
+  timersActivos = 0;
+  if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+  intervalos = {};
+  timers = {};
+  completados = new Set();
+  prepTimerSeg = 60;
+  prepListo = false;
+  bordeSeleccionado = null;
+  contextoSeleccionado = null;
+  nivelSeleccionado = null;
+  document.getElementById('prepTimer').textContent = '1:00';
+  document.getElementById('prepTimer').className = 'prep-timer-display';
+  document.getElementById('prepBtnStart').textContent = '▶ Iniciar';
+  document.getElementById('prepBtnStart').disabled = false;
+  document.getElementById('prepCompletado').className = 'prep-completado';
+  BORDES.forEach(b => {
+    document.getElementById(`bb-${b.id}`).className = 'borde-btn';
+  });
+  CONTEXTOS.forEach(c => {
+    document.getElementById(`cc-${c.id}`).className = 'borde-btn';
+  });
+  NIVELES.forEach(n => {
+    document.getElementById(`nn-${n.id}`).className = 'nivel-btn';
+  });
+  document.getElementById('notaLibre').value = '';
+  document.getElementById('cardDetalle').style.display = 'none';
+  document.getElementById('btnGenerar').disabled = true;
+  document.getElementById('resultado').className = 'resultado';
+  const empiezaR = document.querySelector('.empieza-aqui');
+  if (empiezaR) empiezaR.style.display = '';
+  document.getElementById('reflexionTexto').value = '';
+  document.getElementById('reflexionGuardado').className = 'reflexion-guardado';
+  document.getElementById('reflexionBox').className = 'reflexion-box';
+  document.getElementById('rachaTexto').className = 'pc-racha';
+  document.getElementById('btnGuardarReflexion').textContent = 'Guardar lo que noté';
+  document.getElementById('btnGuardarReflexion').disabled = false;
+  window.scrollTo({ behavior: 'smooth', top: 0 });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+init();
+</script>
+</body>
+</html>
